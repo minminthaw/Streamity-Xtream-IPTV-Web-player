@@ -112,7 +112,7 @@ const Player = () => {
 
     setError(false)
 
-    let ip = playingChannel.url ? convertTsToM3u8(playingChannel.url) : generateUrl("live", playingChannel.stream_id, "m3u8")
+    let ip = playingChannel.direct_source ? convertTsToM3u8(playingChannel.direct_source) : generateUrl("live", playingChannel.stream_id, "m3u8")
 
     if (playingChannel.timeshift)
       ip = catchupUrlGenerator(ip, playingChannel.timeshift, playingChannel.duration);
@@ -155,9 +155,24 @@ const Player = () => {
          url={url}
          pip={pip}
          controls={false}
-         onError={()=> setError(true)}
-         onBufferEnd={()=>setIsLoading(false)}
-         onBuffer={()=>setIsLoading(true)}
+         onProgress={(state)=>{
+          setError(false)
+         }}
+         onPlay={()=>{
+          setError(false)
+        }}
+         onError={(error, data)=> {
+          setError(true)
+          setIsLoading(false)
+         }}
+         onBufferEnd={()=>{
+          setError(false)
+          setIsLoading(false)
+         }}
+         onBuffer={()=>{
+          setIsLoading(true);
+          setError(false)
+        }}
         />
         { isLoading === true && (<Spin>
             <Loading color={"var(--second-color);"}>
